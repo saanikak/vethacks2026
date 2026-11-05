@@ -44,12 +44,12 @@ const CHOICE = {
 // Target layout, in units on an 880 x 880 stage centered on 0,0. Every slot is checked to stay inside
 // its ring band, including the corners of the pill. Change these together with the ring radii.
 const SIZE = 880;
-const RADIUS = { you: 50, earn: 200, train: 320, big: 435 };
-const PILL = { w: 128, h: 54 };
+const RADIUS = { you: 46, earn: 205, train: 325, big: 438 };
+const PILL = { w: 136, h: 60 };
 const CHIP = { w: 78, h: 54 };
-const SLOTS = { earn: [[0, -110], [-112, 56], [112, 56]], train: [[0, -248], [-105, 225], [105, 225]], big: [[0, -365], [-105, 350], [105, 350]] };
-const CHIP_AT = { earn: [0, 133], train: [260, 0], big: [378, 0] };
-const LABEL_Y = { earn: -176, train: -303, big: -419 };
+const SLOTS = { earn: [[0, -112], [-112, 58], [112, 58]], train: [[0, -254], [-105, 236], [105, 236]], big: [[0, -374], [-105, 360], [105, 360]] };
+const CHIP_AT = { earn: [0, 138], train: [265, 0], big: [382, 0] };
+const LABEL_Y = { earn: -180, train: -309, big: -422 };
 const box = ([x, y], { w, hh }) => `left:${((x - w / 2 + SIZE / 2) / SIZE) * 100}%;top:${((y - hh / 2 + SIZE / 2) / SIZE) * 100}%;width:${(w / SIZE) * 100}%;height:${(hh / SIZE) * 100}%`;
 
 export function targetView(ctx) {
@@ -78,6 +78,7 @@ export function targetView(ctx) {
   const detailBox = h("div", { class: "tgt-detail", "aria-live": "polite" });
   const listBox = h("div", { class: "tgt-list" });
   const pathBox = h("div", { class: "path-box" });
+  const lastShown = {}; // keeps a role in the same spot when it's chosen, so pills don't jump under the finger
   const compareBox = h("div", { class: "compare", "aria-live": "polite" });
   const viewButtons = {};
 
@@ -97,9 +98,10 @@ export function targetView(ctx) {
     if (focus) document.querySelector(`[data-focus="${focus}"]`)?.focus();
   }
 
-  function selectRole(id) {
-    state.targetRole = state.targetRole === id ? null : id;
-    paint();
+  // One tap chooses a role for its ring and opens its details. Tapping it again removes it.
+  function tapRole(id) {
+    state.targetRole = id;
+    toggleChoice(id);
   }
   function toggleChoice(id) {
     const c = CHOICE[score(id).horizon];
@@ -135,7 +137,31 @@ export function targetView(ctx) {
     const left = room - first.length;
     const fitRoom = others.length && !first.some((s) => !fits(s.role.id)) ? Math.max(0, left - 1) : left;
     const picked = [...first, ...matches.slice(0, fitRoom)];
-    return [...picked, ...others, ...matches.slice(fitRoom)].slice(0, room);
+    const shown = [...picked, ...others, ...matches.slice(fitRoom)].slice(0, room);
+    const slots = Array(room).fill(null);
+    (lastShown[ring] || []).forEach((id, i) => { const s = shown.find((x) => x.role.id === id); if (s) slots[i] = s; });
+    for (const s of shown) if (!slots.includes(s)) slots[slots.indexOf(null)] = s;
+    lastShown[ring] = slots.map((s) => s?.role.id);
+    return slots;
+  }
+
+  function nextStepText() {
+    if (state.firstJob && !state.dream) return "Great first step. Now pick a dream in the outer ring.";
+    if (state.dream && !state.firstJob) return "Great dream. Now pick a first step in the inner ring.";
+    if (state.firstJob && state.dream) return state.growJob ? "Your path is set. You chose these. Change them any time." : "Add a grow step in the middle ring if you want one, or see your gaps below.";
+    return "Start with a first step in the inner ring.";
+  }
+
+  function picksBar() {
+    return h("div", { class: "tgt-bar", "aria-live": "polite" },
+      h("div", { class: "tgt-bar-slots" }, HORIZON_ORDER.map((ring) => {
+        const c = CHOICE[ring];
+        const id = state[c.key];
+        return h("div", { class: id ? `tgt-bar-slot chosen-${c.cls}` : "tgt-bar-slot" },
+          h("span", { class: "tgt-bar-label" }, `${c.badge}${ring === "train" ? " (optional)" : ""}`),
+          h("strong", {}, id ? score(id).role.title : "Not chosen yet"));
+      })),
+      h("p", { class: "tgt-bar-next" }, nextStepText()));
   }
 
   function paintTarget(groups) {
@@ -152,6 +178,7 @@ export function targetView(ctx) {
       const list = groups[ring];
       const shown = visibleRoles(ring, list);
       shown.forEach((s, i) => {
+        if (!s) return;
         const id = s.role.id;
         const at = SLOTS[ring][i];
         placed.set(id, at);
@@ -159,13 +186,13 @@ export function targetView(ctx) {
         const look = state.motivations.length ? (fits(id) ? "fit" : "faded") : "plain";
         const selected = state.targetRole === id;
         pillsOut.push(h("button", { type: "button", class: `tgt-role ${look}${choice ? ` chosen-${choice.cls}` : ""}${selected ? " selected" : ""}`,
-          style: box(at, { w: PILL.w, hh: PILL.h }), "data-focus": `pill-${id}`, "data-ring": ring, "aria-pressed": String(selected),
+          style: box(at, { w: PILL.w, hh: PILL.h }), "data-focus": `pill-${id}`, "data-ring": ring, "aria-pressed": String(!!choice),
           "aria-label": `${s.role.title}, ${HORIZONS[ring].label}${choice ? `, ${choice.status}` : ""}${look === "fit" ? ", fits what you picked" : ""}`,
-          onclick: () => selectRole(id) },
+          onclick: () => tapRole(id) },
           choice ? h("span", { class: `tgt-badge badge-${choice.cls}` }, choice.badge) : null,
           h("span", { class: "tgt-role-name" }, s.role.title)));
       });
-      const extra = list.length - shown.length;
+      const extra = list.length - shown.filter(Boolean).length;
       if (extra > 0) pillsOut.push(h("button", { type: "button", class: "tgt-more", style: box(CHIP_AT[ring], { w: CHIP.w, hh: CHIP.h }), "data-ring": ring, "data-focus": `more-${ring}`,
         "aria-label": `${extra} more ${HORIZONS[ring].label} roles. Opens the list.`, onclick: () => showList(ring) }, `+${extra} more`));
     }
@@ -176,7 +203,9 @@ export function targetView(ctx) {
     for (const k of HORIZON_ORDER) art.append(svg("text", { y: LABEL_Y[k], class: `tgt-label tgt-label-${k}`, "text-anchor": "middle" }, `${HORIZONS[k].label} · ${HORIZONS[k].span}`));
 
     stage.append(art, ...pillsOut);
-    targetBox.replaceChildren(h("div", { class: "tgt-scroll" }, stage),
+    targetBox.replaceChildren(picksBar(),
+      h("p", { class: "tgt-how" }, "Choose your short-term, growth, and long-term goals: tap one role in each ring. Tap it again to remove it. See more roles with the \u201c+ more\u201d buttons."),
+      h("div", { class: "tgt-scroll" }, stage),
       h("p", { class: "legend tgt-scroll-hint" }, "Swipe sideways to see the whole target, or use List view."),
       h("p", { class: "legend" }, state.motivations.length
         ? "Solid roles fit what you picked. Faded roles are still open to you. Nothing is ruled out."
@@ -186,9 +215,7 @@ export function targetView(ctx) {
   // ---- Detail card ----
   function paintDetail() {
     const id = state.targetRole;
-    const needDream = state.firstJob && !state.dream;
-    const nudge = needDream ? h("p", { class: "tgt-nudge" }, "Great first step. Now pick a dream in the outer ring.") : null;
-    if (!id) return detailBox.replaceChildren(...[nudge, h("p", { class: "tgt-hint" }, "Tap a role on the target to see what it takes.")].filter(Boolean));
+    if (!id) return detailBox.replaceChildren(h("p", { class: "tgt-hint" }, "Tap a role on the target to choose it and see what it takes."));
 
     const s = score(id);
     const ring = s.horizon;
@@ -198,7 +225,7 @@ export function targetView(ctx) {
     const isOn = state[c.key] === id;
     const picked = themesFor(id).map((t) => t.label);
     const problems = limitProblems(s);
-    detailBox.replaceChildren(...[nudge, h("article", { class: "opp-card" },
+    detailBox.replaceChildren(h("article", { class: "opp-card" },
       h("p", { class: "eyebrow" }, `${HORIZONS[ring].label} · ${HORIZONS[ring].span}`),
       h("div", { class: "opp-card-head" }, h("h3", {}, s.role.title),
         h("div", { class: "opp-tags" }, h("span", { class: `tag ${MODE_CLASS[path.mode]}` }, path.mode), h("span", { class: `tag ${schedClass}` }, schedule),
@@ -212,7 +239,7 @@ export function targetView(ctx) {
       h("div", { class: "opp-actions" },
         h("button", { class: isOn ? "choose on" : "choose", "data-focus": "choose", "aria-pressed": String(isOn), onclick: () => toggleChoice(id) }, isOn ? c.on : c.make),
         h("button", { class: "secondary strong", "data-focus": "compare", "aria-pressed": String(state.compare.includes(id)), onclick: () => toggleCompare(id) }, state.compare.includes(id) ? "✓ Comparing" : "Compare this path"),
-        h("button", { class: "secondary", onclick: () => goToGaps(id) }, "See gaps")))].filter(Boolean));
+        h("button", { class: "secondary", onclick: () => goToGaps(id) }, "See gaps"))));
   }
 
   // ---- List view ----
@@ -239,9 +266,11 @@ export function targetView(ctx) {
         const id = s.role.id;
         const choice = choiceFor(id);
         const status = choice ? choice.status : fits(id) ? "Fits what you picked" : "Other option";
-        return h("li", {}, h("button", { type: "button", class: `tgt-list-role${choice ? ` chosen-${choice.cls}` : fits(id) ? " fit" : ""}`, onclick: () => openInTarget(id) },
+        const c = CHOICE[ring];
+        return h("li", { class: "tgt-list-row" }, h("button", { type: "button", class: `tgt-list-role${choice ? ` chosen-${choice.cls}` : fits(id) ? " fit" : ""}`, onclick: () => openInTarget(id) },
           h("span", {}, h("strong", {}, s.role.title), h("small", {}, `${payRange(s.role)} (estimate) · ${timeLabel(s)}`)),
-          h("span", { class: `tgt-status${choice ? ` badge-${choice.cls}` : fits(id) ? " status-fit" : ""}` }, status)));
+          h("span", { class: `tgt-status${choice ? ` badge-${choice.cls}` : fits(id) ? " status-fit" : ""}` }, status)),
+          h("button", { type: "button", class: choice ? "secondary tgt-list-choose on" : "secondary tgt-list-choose", "data-focus": `list-choose-${id}`, "aria-pressed": String(!!choice), "aria-label": `${choice ? "Remove" : c.make}: ${s.role.title}`, onclick: () => toggleChoice(id) }, choice ? "Remove" : c.make));
       })) : h("p", {}, "No roles here with your apprenticeship setting."))));
   }
 
@@ -311,9 +340,18 @@ export function targetView(ctx) {
     onchange: (sel) => { state.motivations = sel; state.motivationsEdited = true; paint(); } });
   const note = h("textarea", { id: "target-note", rows: 2, placeholder: "For example, being home by 5", oninput: (e) => (state.dreamNote = e.target.value) }, state.dreamNote);
 
+  // The encouragement people see first: they already have a lot to build on.
+  const heroSkills = prof.skillItems.filter((s) => s.confirmed).map((s) => s.corporate).slice(0, 4);
+  const hero = h("div", { class: "hero" },
+    h("p", { class: "eyebrow" }, "Your potential"),
+    h("h3", {}, "You have plenty of skills, and they can take you far."),
+    h("p", {}, "We want to help you see and actualize that potential, today and beyond. Start close to the center, then aim as far out as you dare."),
+    heroSkills.length ? h("p", { class: "hero-skills" }, `You already bring ${prof.skills.length} skills employers hire for, like ${heroSkills.join(", ")}.`) : null);
+
   paint();
   return h("section", { class: "opp target-screen" },
     h("div", { class: "tgt-head" }, h("h2", {}, "Your target"), viewToggle),
+    hero,
     h("p", { class: "opp-intro" }, `The inner ring is work that can get you earning ${by}. Each ring out takes more training and can pay off further down the road.`),
     h("div", { class: "motivations" }, h("h3", {}, "What sounds like you?"), h("p", { class: "hint" }, "Pick as many as you like."), motivations),
     targetBox, listBox, detailBox, pathBox, compareBox,
