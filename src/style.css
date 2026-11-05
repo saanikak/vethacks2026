@@ -225,6 +225,11 @@ button.help[aria-expanded=true] { background: var(--navy); color: #fff; }
 .appr-note { color: #7a4800 !important; font-weight: 600; }
 
 /* Your target: motivations, rings, role detail, list, and path */
+.hero { background: linear-gradient(135deg, var(--navy), #2b4570) var(--navy); color: #fff; border-radius: 14px; padding: 1.25rem 1.5rem; margin: .5rem 0 1rem; }
+.hero .eyebrow { color: #f4c77d; }
+.opp .hero h3 { color: #fff; margin: .2rem 0 .4rem; font-size: 1.8rem; line-height: 1.2; }
+.hero p { margin: .4rem 0; }
+.hero-skills { background: #ffffff1f; border-radius: 8px; padding: .5rem .75rem; }
 .target-screen h2 { margin: .5rem 0 .25rem; }
 .tgt-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem 1rem; }
 .tgt-toggle { display: inline-flex; }
@@ -235,7 +240,8 @@ button.help[aria-expanded=true] { background: var(--navy); color: #fff; }
 .motivations { margin: 1rem 0; }
 .motivations h3 { margin: 0 0 .1rem; color: #1b1f24; font-size: 1.25rem; }
 .motivations .hint { margin-top: 0; }
-.motivations .pill { min-height: 44px; max-width: 19rem; }
+.motivations .pills { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); }
+.motivations .pill { min-height: 44px; align-self: stretch; }
 .pill-tag { display: inline-block; margin-top: .3rem; padding: 0 .5rem; border-radius: 99px; background: #e3f1e6; color: #1d5c32; font-size: .78rem; font-weight: 700; }
 .tgt-scroll { overflow-x: auto; margin: 1rem 0 .5rem; }
 .tgt-scroll-hint { display: none; }
@@ -245,15 +251,15 @@ button.help[aria-expanded=true] { background: var(--navy); color: #fff; }
 .tgt-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .tgt-ring { stroke: #fff; stroke-width: 3; }
 .tgt-ring-big { fill: #eef2f8; } .tgt-ring-train { fill: #dde6f0; } .tgt-ring-earn { fill: #c8d6e5; } .tgt-ring-you { fill: var(--navy); }
-.tgt-label { font-size: 15px; font-weight: 700; letter-spacing: .02em; fill: #1e3a5f; paint-order: stroke; stroke-width: 7px; stroke-linejoin: round; }
+.tgt-label { font-size: 14px; font-weight: 600; fill: #1e3a5f; paint-order: stroke; stroke-width: 6px; stroke-linejoin: round; }
 .tgt-label-earn { stroke: #c8d6e5; } .tgt-label-train { stroke: #dde6f0; } .tgt-label-big { stroke: #eef2f8; }
 .tgt-label-big { fill: #7a4800; }
-.tgt-you-title { fill: #fff; font-size: 21px; font-weight: 700; letter-spacing: .08em; }
-.tgt-you-sub { fill: #dbe3f3; font-size: 14px; }
+.tgt-you-title { fill: #fff; font-size: 18px; font-weight: 700; }
+.tgt-you-sub { fill: #dbe3f3; font-size: 13px; }
 .tgt-path { fill: none; stroke: #7a4800; stroke-width: 3; stroke-dasharray: 8 7; }
-.tgt-role, .tgt-more { position: absolute; margin: 0; padding: 0 .4cqw; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.45cqw; line-height: 1.15; border-radius: 1.6cqw; }
+.tgt-role, .tgt-more { position: absolute; margin: 0; padding: 0 .4cqw; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.6cqw; line-height: 1.15; border-radius: 1.6cqw; }
 .tgt-role { background: #fff; color: var(--navy); border: 1px solid #5b6878; font-weight: 600; }
-.tgt-role.fit { border: 3px solid var(--navy); font-weight: 700; }
+.tgt-role.fit { border: 3px solid var(--navy); }
 .tgt-role.faded { background: #f7f8fa; color: #4a5563; border: 1px dashed #6b7686; font-weight: 500; }
 .tgt-role.selected { outline: 3px solid #b22234; outline-offset: 2px; z-index: 2; }
 .tgt-role.chosen-first { border: 3px solid #1e3a5f; color: var(--navy); background: #fff; }
@@ -262,7 +268,6 @@ button.help[aria-expanded=true] { background: var(--navy); color: #fff; }
 .tgt-more { background: var(--navy); color: #fff; border: 1px solid var(--navy); font-weight: 700; border-radius: 3cqw; }
 .tgt-badge { position: absolute; top: 0; left: 50%; transform: translate(-50%, -88%); padding: .05em .55em; border-radius: 99px; font-size: .85em; font-weight: 700; white-space: nowrap; }
 .badge-first { background: #1e3a5f; color: #fff; } .badge-grow { background: #1d5fa8; color: #fff; } .badge-dream { background: #a35f00; color: #fff; }
-.tgt-nudge { background: #fbeed6; color: #5c3600; font-weight: 600; padding: .6rem .9rem; border-radius: 8px; }
 .tgt-hint { color: #44505f; text-align: center; }
 .tgt-detail { margin: 1rem 0; }
 .tgt-detail .opp-card h3 { margin: 0; font-size: 1.25rem; }
@@ -273,6 +278,9 @@ button.choose.on { background: #fff; color: var(--navy); border: 2px solid var(-
 .tgt-list-ring { margin: 1.25rem 0; scroll-margin-top: 1rem; }
 .tgt-list-ring h3 { margin: .1rem 0; font-size: 1.25rem; }
 .tgt-list-roles { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .5rem; }
+.tgt-list-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: .5rem; }
+.tgt-list-row .tgt-list-role { flex: 1 1 20rem; width: auto; }
+.tgt-list-choose { margin: 0; min-height: 44px; flex: 0 0 auto; font-weight: 600; }
 .tgt-list-role { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .4rem .75rem; width: 100%; min-height: 44px; margin: 0; text-align: left; background: #fff; color: var(--navy); border: 1px solid #c9cfdb; }
 .tgt-list-role.fit { border: 2px solid var(--navy); }
 .tgt-list-role strong, .tgt-list-role small { display: block; }
@@ -285,6 +293,31 @@ button.choose.on { background: #fff; color: var(--navy); border: 2px solid var(-
 .path-step.empty:last-child:not(:first-child) .eyebrow { color: #7a4800; }
 .tgt-path-actions { margin-top: 1rem; }
 .tgt-more-options { margin: 1rem 0; } .tgt-more-options summary { cursor: pointer; color: var(--navy); font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+
+/* Your target: the picks bar stays in view while people tap roles on the rings */
+.tgt-bar { position: sticky; top: 0; z-index: 5; margin: 1rem 0 .5rem; padding: .6rem .75rem; background: #fff; border: 1px solid #d8dce6; border-radius: 12px; box-shadow: 0 2px 6px #0000001a; }
+.tgt-bar-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+.tgt-bar-slot { min-width: 0; padding: .35rem .6rem; border: 2px dashed #6b7686; border-radius: 8px; color: #44505f; }
+.tgt-bar-slot strong { display: block; font-size: .875rem; font-weight: 600; line-height: 1.25; }
+.tgt-bar-label { display: block; font-size: .75rem; font-weight: 700; color: #44505f; }
+.tgt-bar-slot.chosen-first { border: 2px solid #1e3a5f; color: var(--navy); }
+.tgt-bar-slot.chosen-grow { border: 2px solid #1d5fa8; color: var(--navy); }
+.tgt-bar-slot.chosen-dream { border: 2px solid #a35f00; color: var(--navy); }
+.tgt-bar-next { margin: .4rem 0 0; font-size: .875rem; font-weight: 600; color: #5c3600; }
+.tgt-how { margin: .5rem 0; }
+
+/* Your target: one type scale. Title, section heading, body, and small text. */
+.target-screen { line-height: 1.45; }
+.target-screen h2 { font-size: 1.75rem; line-height: 1.2; }
+.target-screen h3, .opp .hero h3, .tgt-detail .opp-card h3, .tgt-list-ring h3, .motivations h3, .path-box h3 { font-size: 1.125rem; line-height: 1.3; font-weight: 700; }
+.opp .hero h3 { font-size: 1.25rem; }
+.target-screen h4, .path-step h4 { font-size: 1rem; line-height: 1.3; font-weight: 700; }
+.target-screen p, .target-screen li, .opp-intro, .opp-bring, .opp-how, .pill strong, .compare-table th, .compare-table td, .target-screen label { font-size: 1rem; }
+.target-screen .hint, .target-screen .legend, .target-screen .opp-meta, .target-screen .opp-lead, .target-screen .opp-warn li, .target-screen .pill small, .target-screen small, .target-screen .tgt-how, .target-screen .tgt-bar-next, .target-screen .rule { font-size: .875rem; }
+.target-screen .eyebrow, .target-screen .tgt-bar-label { font-size: .75rem; letter-spacing: .03em; }
+.target-screen .tag, .target-screen .tgt-status, .target-screen .pill-tag { font-size: .75rem; font-weight: 600; }
+.target-screen .pill strong { font-weight: 600; }
+.target-screen .opp-intro { color: #44505f; }
 
 /* Demo controls */
 .header-actions { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; }

@@ -76,6 +76,7 @@ It keeps Army, Marine Corps, Air Force, Space Force, Navy, and Coast Guard codes
 - Answers shape: see `defaultAnswers` in `state.js`. Questionnaire choices map to interest tags in `WORK_TAGS` / `MOMENT_TAGS` in `matching.js`.
 - Your target rings are based on time, not score: with nothing missing, time = the role's `baseWeeks`; with a credential missing, time = its `months` in `pathways.js`. Up to 3 months = Earn now, up to 12 = Grow, longer = Dream.
 - Target layout: `SLOTS`, `CHIP_AT`, and `RADIUS` in `src/views/target.js` hold max 3 pills per ring, chosen first, then the selected role, then ones that fit a motivation, with one slot kept for a non-matching role when matches would fill the ring; the rest collapse into a "+N more" chip that opens List view. Re-check that pills stay inside their bands if these change.
+- Choosing: one tap on a pill chooses it for its ring and opens its details; tapping again removes it. List view has a choose button on every role. A sticky bar shows the three picks.
 - Choices: `state.firstJob` must be in the inner ring, `state.growJob` the middle, `state.dream` the outer; `targetView` clears any that no longer match. Gaps uses `state.selected`, then dream, then first step, then grow.
 - Pay limit: a role only fails on pay if the top of its range is under the minimum. A role that starts under it gets a note in Compare (`note` on the pay check) but no warning.
 - The internal strong/stretch/reach `ring` value is still computed in `scoreRole`. It sets the default role on the Gaps step when nothing is chosen.
