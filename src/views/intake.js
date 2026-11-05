@@ -297,7 +297,7 @@ export function intakeView(ctx) {
         h("p", { class: "hint" }, "The Army and Marine Corps use an MOS, the Air Force an AFSC, and the Navy and Coast Guard a rate. Search by code or by job title."))),
     buildBtn,
     status, confirmBox,
-    h("p", { class: "hint source-note" }, "Code data: Defense Manpower Data Center military crosswalk, published by the O*NET Resource Center (onetcenter.org)."));
+    null);
   for (const el of [resumeFile, jstFile, resumePaste, jstPaste, codeInput]) { el.addEventListener("change", refresh); el.addEventListener("input", refresh); }
 
   // Coming back with a record already confirmed (the demo, or someone's own earlier answers): show it filled in.

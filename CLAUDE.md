@@ -1,4 +1,4 @@
-# VetHacks 2026 – Veterans Build America (MVP)
+# Beyond the Uniform (VetHacks 2026 MVP)
 
 Static web app for the Veteran's Day hackathon ("veteran's build"). Flow, built around the made-up demo veteran Jordan Lee (Army generator repairer, MOS 91D, single parent, made-up Riverbend County NJ, $25/hr minimum):
 
@@ -64,6 +64,17 @@ python3 scripts/build-codes.py path/to/milx0724.csv
 ```
 
 It keeps Army, Marine Corps, Air Force, Space Force, Navy, and Coast Guard codes; merges Air Force skill levels (3E032, 3E052 -> 3E0X2); marks retired codes; and drops qualifiers (ASI, SQI, SEI, NEC, billet codes). Check the data's license terms before redistributing it outside this project.
+
+## Look and feel (Beyond the Uniform)
+
+The brand is red, white, and blue. All colors are tokens at the top of `src/style.css`: use them instead of new hex codes.
+
+- Blue (`--blue` Old Glory Blue `#0A3161`, plus `--blue-600/500/200/100/50` tints) is structure and selection.
+- Red (`--red` Old Glory Red `#B31942`, plus `--red-700/100/50`) is action and emphasis: the forward button on each step, the dream target, eyebrows, the header and footer flag-edge stripe.
+- White is for surfaces. Green is kept only for "done / good" (Added, checks, converted pay).
+- Type: Fraunces for headings and the wordmark, Inter for body text, both from Google Fonts with system fallbacks, so the app still works offline.
+- The "brand layer" at the end of `style.css` holds the header, sticky step bar, buttons, form fields, cards, and footer. Earlier sections are layout rules recolored to the tokens.
+- The header, step bar, and footer are built in `render()` in `src/app.js`. The star mark and favicon are inline SVG.
 
 ## Decisions (from the feature list)
 

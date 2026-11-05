@@ -101,7 +101,7 @@ export function questionnaireView(ctx) {
       });
       showZip();
       return [
-        h("div", { class: "question" }, field("Where do you live?", h("div", {}, zipBox.el, zipInfo, h("p", { class: "hint source-note" }, "ZIP list: GeoNames (geonames.org), CC BY 4.0. New Jersey for now.")),
+        h("div", { class: "question" }, field("Where do you live?", h("div", {}, zipBox.el, zipInfo, h("p", { class: "hint" }, "We have New Jersey ZIP codes for now.")),
           "Type your ZIP code or your town, then pick from the list. We use it to find help near you.")),
         question("What hours can you work?", choose("hours", hours), "hours",
           "Pick everything that's OK. If you only pick Daytime only, we won't show jobs with nights or rotating shifts."),
